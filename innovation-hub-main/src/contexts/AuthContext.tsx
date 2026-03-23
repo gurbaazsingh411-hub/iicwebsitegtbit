@@ -40,6 +40,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    const fakeAdminEmail = localStorage.getItem("fake_admin");
+    if (fakeAdminEmail) {
+      setUser({ id: "fake-id", email: fakeAdminEmail } as User);
+      setIsAdmin(true);
+      setLoading(false);
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
@@ -54,13 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const fakeAdminEmail = localStorage.getItem("fake_admin");
-      if (fakeAdminEmail) {
-        setUser({ id: "fake-id", email: fakeAdminEmail } as User);
-        setIsAdmin(true);
-        setLoading(false);
-        return;
-      }
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
