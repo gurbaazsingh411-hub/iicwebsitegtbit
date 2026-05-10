@@ -26,10 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const checkAdmin = async (userId: string) => {
-    if (userId === "fake-id") {
-      setIsAdmin(true);
-      return;
-    }
     const { data } = await supabase
       .from("user_roles")
       .select("role")
@@ -40,14 +36,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const fakeAdminEmail = localStorage.getItem("fake_admin");
-    if (fakeAdminEmail) {
-      setUser({ id: "fake-id", email: fakeAdminEmail } as User);
-      setIsAdmin(true);
-      setLoading(false);
-      return;
-    }
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
@@ -74,13 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    if (password === "iicgtbit") {
-      const fakeUser = { id: "fake-id", email } as User;
-      setUser(fakeUser);
-      setIsAdmin(true);
-      localStorage.setItem("fake_admin", email);
-      return { error: null };
-    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };

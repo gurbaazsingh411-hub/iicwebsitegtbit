@@ -1,14 +1,11 @@
-// @ts-nocheck
-import process from 'process'
 import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://qslbrluleqqetjhdmbmq.supabase.co'
+const SUPABASE_URL = 'https://qslbrluleqqetjhdmbmq.supabase.co'
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!SERVICE_ROLE_KEY) {
   console.error("Missing SUPABASE_SERVICE_ROLE_KEY.")
-  console.error("Please provide it by running: SUPABASE_SERVICE_ROLE_KEY=your_key npx tsx supabase/add_admin.ts")
-  process.exit(1)
+  throw new Error("Missing Key");
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
@@ -28,7 +25,7 @@ async function createAdmin() {
   })
 
   if (userError) {
-    if (userError.message.includes('already exists')) {
+    if (userError.message.includes('already been registered')) {
       console.log('User already exists. Fetching user ID...')
       const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers()
       if (listError) {
